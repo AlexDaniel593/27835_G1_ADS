@@ -1,0 +1,4 @@
+ADS1,Kevin Amaguaña,23
+ADS2,Jairo Bonilla,22
+ADS3,Daniel Guaman,22
+ADS4,Reishel Tipan,22
