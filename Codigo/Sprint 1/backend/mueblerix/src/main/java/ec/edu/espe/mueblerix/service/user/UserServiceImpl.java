@@ -59,23 +59,29 @@ public class UserServiceImpl implements UserService {
   @Transactional
   @Override
   public void changePassword(String identification, ChangePasswordRequest changePasswordRequest) {
-    User user = findByIdentification(identification);
+    User user = userRepository.findByIdentification(identification)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found with identification: " + identification));
 
+    // Verificar que las contraseñas coincidan
     if (!changePasswordRequest.getNewPassword().equals(changePasswordRequest.getConfirmPassword())) {
       throw new IllegalArgumentException("Las contraseñas no coinciden");
     }
 
+    // Verificar que la contraseña actual sea correcta
     if (!passwordEncoder.matches(changePasswordRequest.getCurrentPassword(), user.getPassword())) {
       throw new IllegalArgumentException("La contraseña actual es incorrecta");
     }
 
+    // Verificar que la nueva contraseña sea diferente a la actual
     if (passwordEncoder.matches(changePasswordRequest.getNewPassword(), user.getPassword())) {
       throw new IllegalArgumentException("La nueva contraseña debe ser diferente a la actual");
     }
 
+    // Actualizar la contraseña
     user.setPassword(passwordEncoder.encode(changePasswordRequest.getNewPassword()));
     
-    if (user.getFirstLogin()) {
+    // Si es el primer login, actualizamos el flag
+    if (user.getFirstLogin() != null && user.getFirstLogin()) {
       user.setFirstLogin(false);
     }
 
@@ -83,7 +89,7 @@ public class UserServiceImpl implements UserService {
     user.setFailedLoginAttempts(0);
     
     userRepository.save(user);
-    log.info("Password changed successfully for user: {}", user.getIdentification());
+    log.info("Password changed for user: {}", identification);
   }
 
 }

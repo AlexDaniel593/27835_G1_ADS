@@ -24,14 +24,16 @@ public class UserController {
           @Valid @RequestBody ChangePasswordRequest changePasswordRequest,
           @AuthenticationPrincipal UserDetailsImpl userDetails
   ) {
-    log.info("Password change request for user: {}", userDetails.getIdentification());
-    
     try {
       userService.changePassword(userDetails.getIdentification(), changePasswordRequest);
       return ResponseEntity.ok(ApiResponse.success("Contraseña cambiada exitosamente", null));
     } catch (IllegalArgumentException e) {
-      log.warn("Password change failed for user {}: {}", userDetails.getIdentification(), e.getMessage());
+      log.warn("Password change validation error: {}", e.getMessage());
       return ResponseEntity.badRequest().body(ApiResponse.error("Error al cambiar la contraseña", e.getMessage()));
+    } catch (Exception e) {
+      log.error("Unexpected error changing password", e);
+      return ResponseEntity.internalServerError().body(ApiResponse.error("Error interno del servidor", e.getMessage()));
     }
   }
 }
+

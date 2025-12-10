@@ -9,6 +9,7 @@ import jakarta.servlet.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,6 +23,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @Component
+@Slf4j
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private final JwtService jwtService;
@@ -40,36 +42,45 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
           @NotNull HttpServletRequest request,
           @NotNull HttpServletResponse response,
           @NotNull FilterChain filterChain) throws ServletException, IOException {
+    
     if (shouldSkipFilter(request)) {
       filterChain.doFilter(request, response);
       return;
     }
+    
     try {
       String jwt = extractToken(request);
+      
       if (jwt != null && SecurityContextHolder.getContext().getAuthentication() == null) {
         authenticateUser(jwt, request);
       }
     } catch (ExpiredJwtException e) {
+      log.warn("JWT token expired");
       setErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "JWT token has expired");
       return;
 
     } catch (UnsupportedJwtException e) {
+      log.warn("Unsupported JWT token");
       setErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Unsupported JWT token");
       return;
 
     } catch (MalformedJwtException e) {
+      log.warn("Malformed JWT token");
       setErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Malformed JWT token");
       return;
 
     } catch (SecurityException e) {
+      log.warn("Invalid JWT signature");
       setErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT signature");
       return;
 
     } catch (IllegalArgumentException e) {
+      log.warn("Invalid JWT token");
       setErrorResponse(response, HttpServletResponse.SC_UNAUTHORIZED, "Invalid JWT token");
       return;
 
     } catch (Exception e) {
+      log.error("JWT filter error", e);
       setErrorResponse(response, HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Internal server error");
       return;
     }
@@ -85,11 +96,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     final String finalPath = path;
 
-    boolean shouldSkip = EXCLUDED_PATHS.stream().anyMatch(excludedPath -> {
-      boolean matches = finalPath.equals(excludedPath) || finalPath.startsWith(excludedPath + "/");
-      return matches;
-    });
-    return shouldSkip;
+    return EXCLUDED_PATHS.stream().anyMatch(excludedPath -> 
+      finalPath.equals(excludedPath) || finalPath.startsWith(excludedPath.replace("/**", ""))
+    );
   }
 
 
@@ -103,14 +112,20 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
   private void authenticateUser(String token, HttpServletRequest request) {
     String usernameIdentification = jwtService.extractIdentificationSub(token);
+    
     if (!usernameIdentification.trim().isEmpty()) {
       UserDetails userDetails = userDetailsServiceImpl.loadUserByUsername(usernameIdentification);
+      
       if (jwtService.isTokenValid(token, userDetails)) {
         UsernamePasswordAuthenticationToken authenticationToken =
                 new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
         authenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
+      } else {
+        log.warn("Token validation failed for user: {}", usernameIdentification);
       }
+    } else {
+      log.warn("Empty identification extracted from token");
     }
   }
 
