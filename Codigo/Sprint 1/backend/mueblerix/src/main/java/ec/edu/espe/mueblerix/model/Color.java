@@ -11,6 +11,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"products"})
+@ToString(exclude = {"products"})
 public class Color {
 
   @Id
@@ -19,9 +21,6 @@ public class Color {
 
   @Column(nullable = false, unique = true, length = 50)
   private String name;
-
-  @Column(length = 7) // e.g., #FFFFFF
-  private String hexCode;
 
   @Column(nullable = false)
   @Builder.Default

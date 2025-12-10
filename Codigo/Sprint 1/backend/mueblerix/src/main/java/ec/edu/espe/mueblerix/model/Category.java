@@ -12,6 +12,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"products"})
+@ToString(exclude = {"products"})
 public class Category {
 
   @Id

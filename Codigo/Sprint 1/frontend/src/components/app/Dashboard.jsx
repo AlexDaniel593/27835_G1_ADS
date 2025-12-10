@@ -36,6 +36,10 @@ const Dashboard = () => {
     navigate('/login');
   };
 
+  const handleAddProduct = () => {
+    navigate('/add-product');
+  };
+
   return (
     <div className="dashboard-container">
       {showWelcomeModal && (
@@ -130,14 +134,13 @@ const Dashboard = () => {
             <div className="dashboard-card">
               <div className="card-icon" style={{background: '#FFB347'}}>
                 <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="white" strokeWidth="2"/>
-                  <circle cx="9" cy="7" r="4" stroke="white" strokeWidth="2"/>
-                  <path d="M23 21V19C23 17.9391 22.5786 16.9217 21.8284 16.1716C21.0783 15.4214 20.0609 15 19 15H18" stroke="white" strokeWidth="2"/>
+                  <path d="M12 4V20M20 12H4" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  <circle cx="12" cy="12" r="9" stroke="white" strokeWidth="2"/>
                 </svg>
               </div>
-              <h3>Clientes</h3>
-              <p>Administra clientes</p>
-              <button className="card-button">Ver Clientes</button>
+              <h3>Agregar Producto</h3>
+              <p>Añade nuevos productos al catálogo</p>
+              <button className="card-button" onClick={handleAddProduct}>Agregar Producto</button>
             </div>
 
             <div className="dashboard-card">

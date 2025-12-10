@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"product"})
+@ToString(exclude = {"product"})
 public class ProductImage {
 
   @Id

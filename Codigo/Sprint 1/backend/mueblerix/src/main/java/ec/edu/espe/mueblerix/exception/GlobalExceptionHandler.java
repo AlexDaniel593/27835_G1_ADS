@@ -44,11 +44,22 @@ public class GlobalExceptionHandler {
             .body(ApiResponse.error("Error en la solicitud", ex.getMessage()));
   }
 
-  @ExceptionHandler(Exception.class)
-  public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
-    log.error("Unexpected error occurred", ex);
+  @ExceptionHandler(RuntimeException.class)
+  public ResponseEntity<ApiResponse<Void>> handleRuntimeException(RuntimeException ex) {
+    log.error("RuntimeException occurred: {}", ex.getMessage(), ex);
     return ResponseEntity
             .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body(ApiResponse.error("Error interno del servidor", "Ocurrió un error inesperado"));
+            .body(ApiResponse.error("Error en el servidor", ex.getMessage()));
+  }
+
+  @ExceptionHandler(Exception.class)
+  public ResponseEntity<ApiResponse<Void>> handleGenericException(Exception ex) {
+    log.error("=== UNEXPECTED ERROR OCCURRED ===");
+    log.error("Exception type: {}", ex.getClass().getName());
+    log.error("Exception message: {}", ex.getMessage());
+    log.error("Stack trace:", ex);
+    return ResponseEntity
+            .status(HttpStatus.INTERNAL_SERVER_ERROR)
+            .body(ApiResponse.error("Error interno del servidor", ex.getMessage() != null ? ex.getMessage() : "Ocurrió un error inesperado"));
   }
 }

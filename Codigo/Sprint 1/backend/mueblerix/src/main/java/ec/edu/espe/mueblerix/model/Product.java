@@ -14,6 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"materials", "colors", "images", "offers", "category"})
+@ToString(exclude = {"materials", "colors", "images", "offers", "category"})
 public class Product {
 
   @Id
@@ -25,15 +27,6 @@ public class Product {
 
   @Column(nullable = false, precision = 10, scale = 2)
   private BigDecimal price;
-
-  @Column(length = 2000)
-  private String description;
-
-  @Column
-  private Integer stock;
-
-  @Column
-  private Integer minimumStock;
 
   @ManyToOne(fetch = FetchType.LAZY)
   @JoinColumn(name = "category_id", nullable = false)

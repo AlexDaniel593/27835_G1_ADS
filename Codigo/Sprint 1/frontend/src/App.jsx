@@ -3,6 +3,7 @@ import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Login from './components/app/Login';
 import Dashboard from './components/app/Dashboard';
+import AddProduct from './components/app/AddProduct';
 import './App.css';
 
 function App() {
@@ -16,6 +17,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/add-product" 
+            element={
+              <ProtectedRoute>
+                <AddProduct />
               </ProtectedRoute>
             } 
           />
