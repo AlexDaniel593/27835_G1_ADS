@@ -49,9 +49,9 @@ public class User {
   @Builder.Default
   private Boolean firstLogin = true;
 
-  @Column(nullable = false)
+  @Column(name = "failed_login_attempts", nullable = false)
   @Builder.Default
-  private Integer failedAttempts = 0;
+  private Integer failedLoginAttempts = 0;
 
   @Column
   private LocalDateTime blockedAt;

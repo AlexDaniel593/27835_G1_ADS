@@ -31,14 +31,7 @@ public class UserDetailsImpl implements UserDetails {
 
     List<GrantedAuthority> authorities =
             user.getRoles().stream()
-                    .map(role -> {
-                      String roleName = role.getName().name();
-                      if (!roleName.startsWith("ROLE_")) {
-                        roleName = "ROLE_" + roleName;
-                      }
-
-                      return new SimpleGrantedAuthority(roleName);
-                    })
+                    .map(role -> new SimpleGrantedAuthority(role.getName().name()))
                     .collect(Collectors.toList());
 
     return new UserDetailsImpl(
