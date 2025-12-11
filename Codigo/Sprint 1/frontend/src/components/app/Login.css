@@ -1,7 +1,7 @@
 .login-container {
   display: flex;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #EFE9D5;
   width: 100%;
 }
 
@@ -28,7 +28,7 @@
 
 .login-header h2 {
   font-size: 24px;
-  color: #333;
+  color: #27445D;
   margin: 0;
   font-weight: 600;
 }
@@ -62,8 +62,8 @@
 
 .form-group input:focus {
   outline: none;
-  border-color: #4A90E2;
-  box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.1);
+  border-color: #497D74;
+  box-shadow: 0 0 0 3px rgba(73, 125, 116, 0.1);
 }
 
 .form-group input:disabled {
@@ -84,7 +84,7 @@
 .submit-button {
   width: 100%;
   padding: 14px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #497D74;
   color: white;
   border: none;
   border-radius: 8px;
@@ -92,12 +92,13 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  box-shadow: 0 4px 15px rgba(73, 125, 116, 0.4);
 }
 
 .submit-button:hover:not(:disabled) {
+  background: #71BBB2;
   transform: translateY(-2px);
-  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.5);
+  box-shadow: 0 6px 20px rgba(73, 125, 116, 0.5);
 }
 
 .submit-button:disabled {

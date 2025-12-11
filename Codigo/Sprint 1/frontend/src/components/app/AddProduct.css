@@ -26,6 +26,27 @@ body {
     width: 100%;
     font-size: 0.5rem;
     font-weight: bold;
+    position: relative;
+}
+
+.add-product-header .back-to-dashboard {
+    position: absolute;
+    left: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: transparent;
+    border: 2px solid white;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2rem;
+    transition: all 0.3s;
+}
+
+.add-product-header .back-to-dashboard:hover {
+    background-color: white;
+    color: #497D74;
 }
 
 /* Contenedor principal */
@@ -106,6 +127,7 @@ body {
     background-color: #EFE9D5;
     outline: none;
     transition: border-color 0.3s ease-in-out;
+    color: black;
 }
 
 .add-product-input:focus,
@@ -149,6 +171,7 @@ body {
     border-radius: 5px;
     font-size: 0.9rem;
     background-color: #EFE9D5;
+    color: black;
 }
 
 .add-new-btn {

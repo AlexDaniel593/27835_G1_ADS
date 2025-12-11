@@ -129,6 +129,33 @@ public class ProductService {
                 .collect(Collectors.toList());
     }
 
+    @Transactional(readOnly = true)
+    public List<ProductResponse> searchProductsAdvanced(String name, Long categoryId, Long materialId, 
+                                                        Long colorId, java.math.BigDecimal minPrice, 
+                                                        java.math.BigDecimal maxPrice) {
+        log.info("Advanced search - name: {}, categoryId: {}, materialId: {}, colorId: {}, minPrice: {}, maxPrice: {}", 
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        
+        List<Product> products = productRepository.searchProductsAdvanced(
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteProduct(Long id) {
+        log.info("Soft deleting product with ID: {}", id);
+        Product product = productRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        
+        product.setIsDeleted(true);
+        product.setIsActive(false);
+        productRepository.save(product);
+        log.info("Product soft deleted successfully: {}", id);
+    }
+
     private ProductResponse mapToProductResponse(Product product) {
         return ProductResponse.builder()
                 .id(product.getId())

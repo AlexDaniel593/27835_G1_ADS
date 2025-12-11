@@ -60,4 +60,26 @@ public class ProductController {
         List<ProductResponse> products = productService.searchProductsByName(name);
         return ResponseEntity.ok(ApiResponse.success("Búsqueda completada exitosamente", products));
     }
+
+    @GetMapping("/search/advanced")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> searchProductsAdvanced(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long materialId,
+            @RequestParam(required = false) Long colorId,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice) {
+        log.info("Advanced search - name: {}, categoryId: {}, materialId: {}, colorId: {}, price range: {}-{}", 
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        List<ProductResponse> products = productService.searchProductsAdvanced(
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        return ResponseEntity.ok(ApiResponse.success("Búsqueda avanzada completada exitosamente", products));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
+        log.info("Deleting product with ID: {}", id);
+        productService.deleteProduct(id);
+        return ResponseEntity.ok(ApiResponse.success("Producto eliminado exitosamente", null));
+    }
 }

@@ -18,6 +18,7 @@ export const API_ENDPOINTS = {
     BY_ID: (id) => `/products/${id}`,
     BY_CATEGORY: (categoryId) => `/products/category/${categoryId}`,
     SEARCH: '/products/search',
+    SEARCH_ADVANCED: '/products/search/advanced',
   },
   CATEGORIES: {
     BASE: '/categories',

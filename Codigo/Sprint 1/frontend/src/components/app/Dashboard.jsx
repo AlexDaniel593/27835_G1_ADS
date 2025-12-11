@@ -40,6 +40,10 @@ const Dashboard = () => {
     navigate('/add-product');
   };
 
+  const handleConsultarProducto = () => {
+    navigate('/consultar-producto');
+  };
+
   return (
     <div className="dashboard-container">
       {showWelcomeModal && (
@@ -93,6 +97,9 @@ const Dashboard = () => {
               <span className="user-name">{user?.firstName} {user?.lastName}</span>
               <span className="user-role">{user?.roles?.join(', ')}</span>
             </div>
+            <button className="btn-settings" onClick={() => setShowChangePassword(true)}>
+              <i className="fas fa-cog"></i> Cambiar Contraseña
+            </button>
             <button className="btn-logout" onClick={handleLogout}>
               Cerrar Sesión
             </button>
@@ -115,21 +122,11 @@ const Dashboard = () => {
                   <path d="M16 7V5C16 3.89543 15.1046 3 14 3H10C8.89543 3 8 3.89543 8 5V7" stroke="white" strokeWidth="2"/>
                 </svg>
               </div>
-              <h3>Productos</h3>
-              <p>Gestiona el catálogo de productos</p>
-              <button className="card-button">Ver Productos</button>
+              <h3>Consultar Productos</h3>
+              <p>Busca y gestiona el catálogo de productos</p>
+              <button className="card-button" onClick={handleConsultarProducto}>Ver Productos</button>
             </div>
 
-            <div className="dashboard-card">
-              <div className="card-icon" style={{background: '#50C878'}}>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M9 12H15M9 16H15M17 21H7C5.89543 21 5 20.1046 5 19V5C5 3.89543 5.89543 3 7 3H12.5858C12.851 3 13.1054 3.10536 13.2929 3.29289L18.7071 8.70711C18.8946 8.89464 19 9.149 19 9.41421V19C19 20.1046 18.1046 21 17 21Z" stroke="white" strokeWidth="2"/>
-                </svg>
-              </div>
-              <h3>Proformas</h3>
-              <p>Crea y gestiona proformas</p>
-              <button className="card-button">Ver Proformas</button>
-            </div>
 
             <div className="dashboard-card">
               <div className="card-icon" style={{background: '#FFB347'}}>
@@ -143,18 +140,6 @@ const Dashboard = () => {
               <button className="card-button" onClick={handleAddProduct}>Agregar Producto</button>
             </div>
 
-            <div className="dashboard-card">
-              <div className="card-icon" style={{background: '#9370DB'}}>
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="white" strokeWidth="2"/>
-                  <path d="M2 17L12 22L22 17" stroke="white" strokeWidth="2"/>
-                  <path d="M2 12L12 17L22 12" stroke="white" strokeWidth="2"/>
-                </svg>
-              </div>
-              <h3>Reportes</h3>
-              <p>Visualiza estadísticas</p>
-              <button className="card-button">Ver Reportes</button>
-            </div>
           </div>
         </div>
       </main>

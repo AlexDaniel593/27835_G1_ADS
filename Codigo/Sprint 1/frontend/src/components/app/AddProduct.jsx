@@ -208,6 +208,9 @@ const AddProduct = () => {
   return (
     <div>
       <header className="add-product-header">
+        <button className="back-to-dashboard" onClick={handleCancel} title="Volver al Dashboard">
+          <i className="fas fa-arrow-left"></i>
+        </button>
         <h1>MUEBLERIX</h1>
       </header>
 

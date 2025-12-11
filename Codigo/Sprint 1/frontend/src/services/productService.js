@@ -31,6 +31,27 @@ export const productService = {
     const response = await apiClient.get(`${API_ENDPOINTS.PRODUCTS.SEARCH}?name=${name}`);
     return response.data;
   },
+
+  // Búsqueda avanzada de productos con múltiples filtros
+  searchProductsAdvanced: async (filters) => {
+    const params = new URLSearchParams();
+    
+    if (filters.name) params.append('name', filters.name);
+    if (filters.categoryId) params.append('categoryId', filters.categoryId);
+    if (filters.materialId) params.append('materialId', filters.materialId);
+    if (filters.colorId) params.append('colorId', filters.colorId);
+    if (filters.minPrice) params.append('minPrice', filters.minPrice);
+    if (filters.maxPrice) params.append('maxPrice', filters.maxPrice);
+
+    const response = await apiClient.get(`${API_ENDPOINTS.PRODUCTS.SEARCH_ADVANCED}?${params.toString()}`);
+    return response.data;
+  },
+
+  // Eliminar producto (soft delete)
+  deleteProduct: async (id) => {
+    const response = await apiClient.delete(API_ENDPOINTS.PRODUCTS.BY_ID(id));
+    return response.data;
+  },
 };
 
 export const categoryService = {
