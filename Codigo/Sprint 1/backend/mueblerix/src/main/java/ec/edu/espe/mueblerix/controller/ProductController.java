@@ -78,10 +78,13 @@ public class ProductController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<ApiResponse<Void>> deleteProduct(@PathVariable Long id) {
-        log.info("Deleting product with ID: {}", id);
-        productService.deleteProduct(id);
-        return ResponseEntity.ok(ApiResponse.success("Producto eliminado exitosamente", null));
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(
+            @PathVariable Long id,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal 
+            ec.edu.espe.mueblerix.security.UserDetailsImpl userDetails) {
+        log.info("Deleting product with ID: {} by user: {}", id, userDetails.getId());
+        productService.deleteProduct(id, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("El producto ha sido eliminado correctamente", null));
     }
 
     @PutMapping("/{id}")

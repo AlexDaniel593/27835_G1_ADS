@@ -12,6 +12,10 @@ const SearchProduct = () => {
   const [materials, setMaterials] = useState([]);
   const [colors, setColors] = useState([]);
   
+  // Estados para el modal de confirmación
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
+  
   const [filters, setFilters] = useState({
     name: '',
     categoryId: '',
@@ -108,8 +112,38 @@ const SearchProduct = () => {
     navigate(`/edit-product/${productId}`);
   };
 
-  const handleDelete = async (productId, productName) => {
-    // TODO: Functionality to implement
+  const handleDelete = (productId, productName) => {
+    setProductToDelete({ id: productId, name: productName });
+    setShowDeleteModal(true);
+  };
+
+  const confirmDelete = async () => {
+    if (!productToDelete) return;
+
+    try {
+      setLoading(true);
+      await productService.deleteProduct(productToDelete.id);
+      
+      toast.success('El producto ha sido eliminado correctamente');
+      
+      // Recargar la lista de productos después de eliminar
+      const response = await productService.getAllProducts();
+      setProducts(response.data || []);
+      
+      // Cerrar modal
+      setShowDeleteModal(false);
+      setProductToDelete(null);
+    } catch (error) {
+      console.error('Error deleting product:', error);
+      toast.error('Error al eliminar el producto. Por favor, intenta de nuevo.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setProductToDelete(null);
   };
 
   const formatPrice = (price) => {
@@ -299,6 +333,52 @@ const SearchProduct = () => {
           )}
         </div>
       </div>
+
+      {/* Modal de confirmación de eliminación */}
+      {showDeleteModal && (
+        <div className="modal-overlay" onClick={cancelDelete}>
+          <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              <div className="modal-icon-warning">
+                <i className="fas fa-exclamation-triangle"></i>
+              </div>
+              <h3>Confirmar Eliminación</h3>
+            </div>
+            
+            <div className="modal-body">
+              <p className="modal-question">
+                ¿Está seguro de que desea eliminar el siguiente producto?
+              </p>
+              <div className="product-info-box">
+                <i className="fas fa-box"></i>
+                <strong>{productToDelete?.name}</strong>
+              </div>
+              <p className="modal-warning">
+                <i className="fas fa-info-circle"></i>
+                Esta acción moverá el producto a la Bandeja de Eliminados.
+              </p>
+            </div>
+            
+            <div className="modal-footer">
+              <button 
+                className="modal-btn modal-btn-cancel" 
+                onClick={cancelDelete}
+                disabled={loading}
+              >
+                <i className="fas fa-times"></i> Cancelar
+              </button>
+              <button 
+                className="modal-btn modal-btn-confirm" 
+                onClick={confirmDelete}
+                disabled={loading}
+              >
+                <i className="fas fa-trash-alt"></i> 
+                {loading ? 'Eliminando...' : 'Eliminar Producto'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

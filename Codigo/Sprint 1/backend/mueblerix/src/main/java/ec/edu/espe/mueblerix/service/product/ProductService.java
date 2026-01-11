@@ -146,15 +146,20 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
-        log.info("Soft deleting product with ID: {}", id);
+    public void deleteProduct(Long id, Long userId) {
+        log.info("Soft deleting product with ID: {} by user: {}", id, userId);
         Product product = productRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        
         product.setIsDeleted(true);
         product.setIsActive(false);
+        product.setDeletedAt(java.time.LocalDateTime.now());
+        if (userId != null) {
+            User user = new User();
+            user.setId(userId);
+            product.setDeletionUser(user);
+        }
         productRepository.save(product);
-        log.info("Product soft deleted successfully: {}", id);
+        log.info("Product soft deleted successfully: {} at {}", id, product.getDeletedAt());
     }
 
     @Transactional
