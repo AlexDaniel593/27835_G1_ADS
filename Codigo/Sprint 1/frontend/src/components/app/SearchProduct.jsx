@@ -105,8 +105,7 @@ const SearchProduct = () => {
   };
 
   const handleEdit = (productId) => {
-    // TODO: Functionality to implement
-    // navigate(`/edit-product/${productId}`);
+    navigate(`/edit-product/${productId}`);
   };
 
   const handleDelete = async (productId, productName) => {

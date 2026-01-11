@@ -1,6 +1,7 @@
 package ec.edu.espe.mueblerix.controller;
 
 import ec.edu.espe.mueblerix.dto.request.CreateProductRequest;
+import ec.edu.espe.mueblerix.dto.request.UpdateProductRequest;
 import ec.edu.espe.mueblerix.dto.response.ApiResponse;
 import ec.edu.espe.mueblerix.dto.response.ProductResponse;
 import ec.edu.espe.mueblerix.service.product.ProductService;
@@ -81,5 +82,14 @@ public class ProductController {
         log.info("Deleting product with ID: {}", id);
         productService.deleteProduct(id);
         return ResponseEntity.ok(ApiResponse.success("Producto eliminado exitosamente", null));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProductRequest request) {
+        log.info("Updating product with ID: {}", id);
+        ProductResponse product = productService.updateProduct(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Producto actualizado correctamente", product));
     }
 }

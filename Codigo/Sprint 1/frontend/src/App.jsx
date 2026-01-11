@@ -6,6 +6,7 @@ import Login from './components/app/Login';
 import Dashboard from './components/app/Dashboard';
 import AddProduct from './components/app/AddProduct';
 import SearchProduct from './components/app/SearchProduct';
+import EditProduct from './components/app/EditProduct';
 import './App.css';
 
 function App() {
@@ -44,6 +45,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <SearchProduct />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/edit-product/:id" 
+            element={
+              <ProtectedRoute>
+                <EditProduct />
               </ProtectedRoute>
             } 
           />

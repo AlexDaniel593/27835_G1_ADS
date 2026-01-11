@@ -52,6 +52,12 @@ export const productService = {
     const response = await apiClient.delete(API_ENDPOINTS.PRODUCTS.BY_ID(id));
     return response.data;
   },
+
+  // Actualizar producto
+  updateProduct: async (id, productData) => {
+    const response = await apiClient.put(API_ENDPOINTS.PRODUCTS.BY_ID(id), productData);
+    return response.data;
+  },
 };
 
 export const categoryService = {
