@@ -1,6 +1,7 @@
 package ec.edu.espe.mueblerix.service.product;
 
 import ec.edu.espe.mueblerix.dto.request.CreateProductRequest;
+import ec.edu.espe.mueblerix.dto.request.UpdateProductRequest;
 import ec.edu.espe.mueblerix.dto.response.*;
 import ec.edu.espe.mueblerix.model.*;
 import ec.edu.espe.mueblerix.repository.*;
@@ -145,15 +146,84 @@ public class ProductService {
     }
 
     @Transactional
-    public void deleteProduct(Long id) {
-        log.info("Soft deleting product with ID: {}", id);
+    public void deleteProduct(Long id, Long userId) {
+        log.info("Soft deleting product with ID: {} by user: {}", id, userId);
         Product product = productRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-        
         product.setIsDeleted(true);
         product.setIsActive(false);
+        product.setDeletedAt(java.time.LocalDateTime.now());
+        if (userId != null) {
+            User user = new User();
+            user.setId(userId);
+            product.setDeletionUser(user);
+        }
         productRepository.save(product);
-        log.info("Product soft deleted successfully: {}", id);
+        log.info("Product soft deleted successfully: {} at {}", id, product.getDeletedAt());
+    }
+
+    @Transactional
+    public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
+        log.info("Updating product with ID: {}", id);
+        
+        try {
+            Product product = productRepository.findByIdAndIsDeletedFalse(id)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            Category category = categoryRepository.findByIdAndIsActiveTrue(request.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada o inactiva"));
+
+            product.setName(request.getName());
+            product.setPrice(request.getPrice());
+            product.setCategory(category);
+
+            if (request.getMaterialIds() != null && !request.getMaterialIds().isEmpty()) {
+                Set<Material> materials = new HashSet<>(
+                        materialRepository.findByIdInAndIsActiveTrue(request.getMaterialIds())
+                );
+                if (materials.size() != request.getMaterialIds().size()) {
+                    throw new RuntimeException("Algunos materiales no fueron encontrados o están inactivos");
+                }
+                product.setMaterials(materials);
+            } else {
+                product.setMaterials(new HashSet<>());
+            }
+
+            if (request.getColorIds() != null && !request.getColorIds().isEmpty()) {
+                Set<Color> colors = new HashSet<>(
+                        colorRepository.findByIdInAndIsActiveTrue(request.getColorIds())
+                );
+                if (colors.size() != request.getColorIds().size()) {
+                    throw new RuntimeException("Algunos colores no fueron encontrados o están inactivos");
+                }
+                product.setColors(colors);
+            } else {
+                product.setColors(new HashSet<>());
+            }
+
+            if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+                productImageRepository.deleteAll(product.getImages());
+                product.getImages().clear();
+                Set<ProductImage> newImages = new HashSet<>();
+                for (int i = 0; i < request.getImageUrls().size(); i++) {
+                    ProductImage image = ProductImage.builder()
+                            .product(product)
+                            .url(request.getImageUrls().get(i))
+                            .order(i)
+                            .isPrimary(i == 0)
+                            .build();
+                    newImages.add(image);
+                }
+                product.setImages(newImages);
+            }
+            Product updatedProduct = productRepository.save(product);
+            log.info("Product updated successfully with ID: {}", id);
+            
+            return mapToProductResponse(updatedProduct);
+        } catch (Exception e) {
+            log.error("Error updating product: {}", e.getMessage(), e);
+            throw new RuntimeException("Error al actualizar el producto: " + e.getMessage(), e);
+        }
     }
 
     private ProductResponse mapToProductResponse(Product product) {
