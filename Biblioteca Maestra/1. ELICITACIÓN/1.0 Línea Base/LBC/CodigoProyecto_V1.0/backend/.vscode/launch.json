@@ -1,0 +1,14 @@
+{
+    "configurations": [
+        {
+            "type": "java",
+            "name": "Spring Boot-MueblerixApplication<mueblerix>",
+            "request": "launch",
+            "cwd": "${workspaceFolder}",
+            "mainClass": "ec.edu.espe.mueblerix.MueblerixApplication",
+            "projectName": "mueblerix",
+            "args": "",
+            "envFile": "${workspaceFolder}/.env"
+        }
+    ]
+}
