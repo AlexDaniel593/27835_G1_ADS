@@ -1,0 +1,85 @@
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { Toaster } from 'sonner';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
+import Login from './components/app/Login';
+import Dashboard from './components/app/Dashboard';
+import AddProduct from './components/app/AddProduct';
+import SearchProduct from './components/app/SearchProduct';
+import EditProduct from './components/app/EditProduct';
+import DeletedProducts from './components/app/DeletedProducts';
+import ManageOffers from './components/app/ManageOffers';
+import './App.css';
+
+function App() {
+  return (
+    <AuthProvider>
+      <Toaster position="top-right" richColors expand={false} />
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute>
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/add-product" 
+            element={
+              <ProtectedRoute>
+                <AddProduct />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/consultar-producto" 
+            element={
+              <ProtectedRoute>
+                <SearchProduct />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/search-product" 
+            element={
+              <ProtectedRoute>
+                <SearchProduct />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/edit-product/:id" 
+            element={
+              <ProtectedRoute>
+                <EditProduct />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/deleted-products" 
+            element={
+              <ProtectedRoute>
+                <DeletedProducts />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/manage-offers" 
+            element={
+              <ProtectedRoute>
+                <ManageOffers />
+              </ProtectedRoute>
+            } 
+          />
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+        </Routes>
+      </Router>
+    </AuthProvider>
+  );
+}
+
+export default App;
