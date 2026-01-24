@@ -1,0 +1,123 @@
+package ec.edu.espe.mueblerix.controller;
+
+import ec.edu.espe.mueblerix.dto.request.CreateProductRequest;
+import ec.edu.espe.mueblerix.dto.request.UpdateProductRequest;
+import ec.edu.espe.mueblerix.dto.response.ApiResponse;
+import ec.edu.espe.mueblerix.dto.response.ProductResponse;
+import ec.edu.espe.mueblerix.service.product.ProductService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/v1/products")
+@RequiredArgsConstructor
+@Slf4j
+public class ProductController {
+
+    private final ProductService productService;
+
+    @PostMapping
+    public ResponseEntity<ApiResponse<ProductResponse>> createProduct(
+            @Valid @RequestBody CreateProductRequest request) {
+        log.info("Creating product: {}", request.getName());
+        ProductResponse product = productService.createProduct(request);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("Producto creado exitosamente", product));
+    }
+
+    @GetMapping
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getAllProducts() {
+        log.info("Fetching all products");
+        List<ProductResponse> products = productService.getAllProducts();
+        return ResponseEntity.ok(ApiResponse.success("Productos obtenidos exitosamente", products));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> getProductById(@PathVariable Long id) {
+        log.info("Fetching product with ID: {}", id);
+        ProductResponse product = productService.getProductById(id);
+        return ResponseEntity.ok(ApiResponse.success("Producto obtenido exitosamente", product));
+    }
+
+    @GetMapping("/category/{categoryId}")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getProductsByCategory(
+            @PathVariable Long categoryId) {
+        log.info("Fetching products by category ID: {}", categoryId);
+        List<ProductResponse> products = productService.getProductsByCategory(categoryId);
+        return ResponseEntity.ok(ApiResponse.success("Productos obtenidos exitosamente", products));
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> searchProductsByName(
+            @RequestParam String name) {
+        log.info("Searching products with name: {}", name);
+        List<ProductResponse> products = productService.searchProductsByName(name);
+        return ResponseEntity.ok(ApiResponse.success("Búsqueda completada exitosamente", products));
+    }
+
+    @GetMapping("/search/advanced")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> searchProductsAdvanced(
+            @RequestParam(required = false) String name,
+            @RequestParam(required = false) Long categoryId,
+            @RequestParam(required = false) Long materialId,
+            @RequestParam(required = false) Long colorId,
+            @RequestParam(required = false) java.math.BigDecimal minPrice,
+            @RequestParam(required = false) java.math.BigDecimal maxPrice) {
+        log.info("Advanced search - name: {}, categoryId: {}, materialId: {}, colorId: {}, price range: {}-{}", 
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        List<ProductResponse> products = productService.searchProductsAdvanced(
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        return ResponseEntity.ok(ApiResponse.success("Búsqueda avanzada completada exitosamente", products));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteProduct(
+            @PathVariable Long id,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal 
+            ec.edu.espe.mueblerix.security.UserDetailsImpl userDetails) {
+        log.info("Deleting product with ID: {} by user: {}", id, userDetails.getId());
+        productService.deleteProduct(id, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("El producto ha sido eliminado correctamente", null));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProductResponse>> updateProduct(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProductRequest request) {
+        log.info("Updating product with ID: {}", id);
+        ProductResponse product = productService.updateProduct(id, request);
+        return ResponseEntity.ok(ApiResponse.success("Producto actualizado correctamente", product));
+    }
+
+    // RF-07: Endpoints para Restaurar Producto
+
+    @GetMapping("/deleted")
+    public ResponseEntity<ApiResponse<List<ProductResponse>>> getDeletedProducts() {
+        log.info("Fetching all deleted products");
+        List<ProductResponse> deletedProducts = productService.getDeletedProducts();
+        
+        // Excepción E.3: Si no existen productos eliminados
+        if (deletedProducts.isEmpty()) {
+            return ResponseEntity.ok(ApiResponse.success("No hay productos en la bandeja.", deletedProducts));
+        }
+        
+        return ResponseEntity.ok(ApiResponse.success("Productos eliminados obtenidos exitosamente", deletedProducts));
+    }
+
+    @PutMapping("/{id}/restore")
+    public ResponseEntity<ApiResponse<ProductResponse>> restoreProduct(
+            @PathVariable Long id,
+            @org.springframework.security.core.annotation.AuthenticationPrincipal 
+            ec.edu.espe.mueblerix.security.UserDetailsImpl userDetails) {
+        log.info("Restoring product with ID: {} by user: {}", id, userDetails.getId());
+        ProductResponse product = productService.restoreProduct(id, userDetails.getId());
+        return ResponseEntity.ok(ApiResponse.success("Producto restaurado correctamente.", product));
+    }
+}

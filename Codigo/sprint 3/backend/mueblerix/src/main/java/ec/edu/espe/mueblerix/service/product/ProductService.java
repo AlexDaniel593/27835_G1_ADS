@@ -1,0 +1,341 @@
+package ec.edu.espe.mueblerix.service.product;
+
+import ec.edu.espe.mueblerix.dto.request.CreateProductRequest;
+import ec.edu.espe.mueblerix.dto.request.UpdateProductRequest;
+import ec.edu.espe.mueblerix.dto.response.*;
+import ec.edu.espe.mueblerix.model.*;
+import ec.edu.espe.mueblerix.repository.*;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class ProductService {
+
+    private final ProductRepository productRepository;
+    private final CategoryRepository categoryRepository;
+    private final MaterialRepository materialRepository;
+    private final ColorRepository colorRepository;
+    private final ProductImageRepository productImageRepository;
+
+    @Transactional
+    public ProductResponse createProduct(CreateProductRequest request) {
+        log.info("Creating new product: {}", request.getName());
+        
+        try {
+            // Validar categoría
+            Category category = categoryRepository.findByIdAndIsActiveTrue(request.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada o inactiva"));
+
+            // Crear el producto con colecciones inicializadas
+            Product product = Product.builder()
+                    .name(request.getName())
+                    .price(request.getPrice())
+                    .category(category)
+                    .materials(new HashSet<>())
+                    .colors(new HashSet<>())
+                    .images(new HashSet<>())
+                    .isActive(true)
+                    .isDeleted(false)
+                    .build();
+
+            // Agregar materiales si existen
+            if (request.getMaterialIds() != null && !request.getMaterialIds().isEmpty()) {
+                Set<Material> materials = new HashSet<>(
+                        materialRepository.findByIdInAndIsActiveTrue(request.getMaterialIds())
+                );
+                if (materials.size() != request.getMaterialIds().size()) {
+                    throw new RuntimeException("Algunos materiales no fueron encontrados o están inactivos");
+                }
+                product.setMaterials(materials);
+            }
+
+            // Agregar colores si existen
+            if (request.getColorIds() != null && !request.getColorIds().isEmpty()) {
+                Set<Color> colors = new HashSet<>(
+                        colorRepository.findByIdInAndIsActiveTrue(request.getColorIds())
+                );
+                if (colors.size() != request.getColorIds().size()) {
+                    throw new RuntimeException("Algunos colores no fueron encontrados o están inactivos");
+                }
+                product.setColors(colors);
+            }
+
+            // Guardar el producto
+            Product savedProduct = productRepository.save(product);
+
+            // Agregar imágenes si existen
+            if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+                Set<ProductImage> images = new HashSet<>();
+                for (int i = 0; i < request.getImageUrls().size(); i++) {
+                    ProductImage image = ProductImage.builder()
+                            .product(savedProduct)
+                            .url(request.getImageUrls().get(i))
+                            .order(i)
+                            .isPrimary(i == 0) // La primera imagen es la principal
+                            .build();
+                    images.add(productImageRepository.save(image));
+                }
+                savedProduct.setImages(images);
+            }
+
+            log.info("Product created successfully with ID: {}", savedProduct.getId());
+            return mapToProductResponse(savedProduct);
+        } catch (Exception e) {
+            log.error("Error creating product: {}", e.getMessage(), e);
+            throw new RuntimeException("Error al crear el producto: " + e.getMessage(), e);
+        }
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getAllProducts() {
+        log.info("Fetching all active products");
+        List<Product> products = productRepository.findByIsActiveTrueAndIsDeletedFalse();
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ProductResponse getProductById(Long id) {
+        log.info("Fetching product with ID: {}", id);
+        Product product = productRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        return mapToProductResponse(product);
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getProductsByCategory(Long categoryId) {
+        log.info("Fetching products by category ID: {}", categoryId);
+        List<Product> products = productRepository.findActiveByCategoryId(categoryId);
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> searchProductsByName(String name) {
+        log.info("Searching products by name: {}", name);
+        List<Product> products = productRepository.searchByName(name);
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public List<ProductResponse> searchProductsAdvanced(String name, Long categoryId, Long materialId, 
+                                                        Long colorId, java.math.BigDecimal minPrice, 
+                                                        java.math.BigDecimal maxPrice) {
+        log.info("Advanced search - name: {}, categoryId: {}, materialId: {}, colorId: {}, minPrice: {}, maxPrice: {}", 
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        
+        List<Product> products = productRepository.searchProductsAdvanced(
+                name, categoryId, materialId, colorId, minPrice, maxPrice);
+        
+        return products.stream()
+                .map(this::mapToProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public void deleteProduct(Long id, Long userId) {
+        log.info("Soft deleting product with ID: {} by user: {}", id, userId);
+        Product product = productRepository.findByIdAndIsDeletedFalse(id)
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+        product.setIsDeleted(true);
+        product.setIsActive(false);
+        product.setDeletedAt(java.time.LocalDateTime.now());
+        if (userId != null) {
+            User user = new User();
+            user.setId(userId);
+            product.setDeletionUser(user);
+        }
+        productRepository.save(product);
+        log.info("Product soft deleted successfully: {} at {}", id, product.getDeletedAt());
+    }
+
+    @Transactional
+    public ProductResponse updateProduct(Long id, UpdateProductRequest request) {
+        log.info("Updating product with ID: {}", id);
+        
+        try {
+            Product product = productRepository.findByIdAndIsDeletedFalse(id)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+
+            Category category = categoryRepository.findByIdAndIsActiveTrue(request.getCategoryId())
+                    .orElseThrow(() -> new RuntimeException("Categoría no encontrada o inactiva"));
+
+            product.setName(request.getName());
+            product.setPrice(request.getPrice());
+            product.setCategory(category);
+
+            if (request.getMaterialIds() != null && !request.getMaterialIds().isEmpty()) {
+                Set<Material> materials = new HashSet<>(
+                        materialRepository.findByIdInAndIsActiveTrue(request.getMaterialIds())
+                );
+                if (materials.size() != request.getMaterialIds().size()) {
+                    throw new RuntimeException("Algunos materiales no fueron encontrados o están inactivos");
+                }
+                product.setMaterials(materials);
+            } else {
+                product.setMaterials(new HashSet<>());
+            }
+
+            if (request.getColorIds() != null && !request.getColorIds().isEmpty()) {
+                Set<Color> colors = new HashSet<>(
+                        colorRepository.findByIdInAndIsActiveTrue(request.getColorIds())
+                );
+                if (colors.size() != request.getColorIds().size()) {
+                    throw new RuntimeException("Algunos colores no fueron encontrados o están inactivos");
+                }
+                product.setColors(colors);
+            } else {
+                product.setColors(new HashSet<>());
+            }
+
+            if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+                productImageRepository.deleteAll(product.getImages());
+                product.getImages().clear();
+                Set<ProductImage> newImages = new HashSet<>();
+                for (int i = 0; i < request.getImageUrls().size(); i++) {
+                    ProductImage image = ProductImage.builder()
+                            .product(product)
+                            .url(request.getImageUrls().get(i))
+                            .order(i)
+                            .isPrimary(i == 0)
+                            .build();
+                    newImages.add(image);
+                }
+                product.setImages(newImages);
+            }
+            Product updatedProduct = productRepository.save(product);
+            log.info("Product updated successfully with ID: {}", id);
+            
+            return mapToProductResponse(updatedProduct);
+        } catch (Exception e) {
+            log.error("Error updating product: {}", e.getMessage(), e);
+            throw new RuntimeException("Error al actualizar el producto: " + e.getMessage(), e);
+        }
+    }
+
+    // RF-07: Métodos para Restaurar Producto
+    
+    @Transactional(readOnly = true)
+    public List<ProductResponse> getDeletedProducts() {
+        log.info("Fetching all deleted products");
+        List<Product> deletedProducts = productRepository.findDeletedProducts();
+        return deletedProducts.stream()
+                .map(this::mapToDeletedProductResponse)
+                .collect(Collectors.toList());
+    }
+
+    @Transactional
+    public ProductResponse restoreProduct(Long id, Long userId) {
+        log.info("Restoring product with ID: {} by user: {}", id, userId);
+        
+        try {
+            // Validar que el producto existe y está eliminado
+            Product product = productRepository.findByIdAndIsDeletedTrue(id)
+                    .orElseThrow(() -> new RuntimeException("Producto no encontrado en la bandeja de eliminados"));
+            
+            // Validar que no exista un producto activo con el mismo nombre (paso 7)
+            if (productRepository.existsActiveProductWithName(product.getName())) {
+                throw new RuntimeException("Ya existe un producto activo con el nombre '" + product.getName() + "'. No se puede restaurar para evitar duplicados.");
+            }
+            
+            // Cambiar el estado del producto a activo (paso 8)
+            product.setIsDeleted(false);
+            product.setIsActive(true);
+            product.setRestoredAt(java.time.LocalDateTime.now());
+            
+            // Registrar el usuario que realizó la restauración (paso 10)
+            if (userId != null) {
+                User user = new User();
+                user.setId(userId);
+                product.setRestorationUser(user);
+            }
+            
+            // Guardar el producto restaurado (paso 9)
+            Product restoredProduct = productRepository.save(product);
+            
+            log.info("Product restored successfully: {} at {} by user {}", id, product.getRestoredAt(), userId);
+            
+            return mapToProductResponse(restoredProduct);
+        } catch (Exception e) {
+            log.error("Error restoring product: {}", e.getMessage(), e);
+            throw new RuntimeException(e.getMessage(), e);
+        }
+    }
+
+    private ProductResponse mapToDeletedProductResponse(Product product) {
+        ProductResponse response = mapToProductResponse(product);
+        // El mapToProductResponse ya incluye toda la información necesaria
+        return response;
+    }
+
+    private ProductResponse mapToProductResponse(Product product) {
+        return ProductResponse.builder()
+                .id(product.getId())
+                .name(product.getName())
+                .price(product.getPrice())
+                .category(mapToCategoryResponse(product.getCategory()))
+                .materials(product.getMaterials() != null ? product.getMaterials().stream()
+                        .map(this::mapToMaterialResponse)
+                        .collect(Collectors.toList()) : List.of())
+                .colors(product.getColors() != null ? product.getColors().stream()
+                        .map(this::mapToColorResponse)
+                        .collect(Collectors.toList()) : List.of())
+                .images(product.getImages() != null ? product.getImages().stream()
+                        .map(this::mapToProductImageResponse)
+                        .sorted((i1, i2) -> i1.getOrder().compareTo(i2.getOrder()))
+                        .collect(Collectors.toList()) : List.of())
+                .isActive(product.getIsActive())
+                .createdAt(product.getCreatedAt())
+                .updatedAt(product.getUpdatedAt())
+                .build();
+    }
+
+    private CategoryResponse mapToCategoryResponse(Category category) {
+        return CategoryResponse.builder()
+                .id(category.getId())
+                .name(category.getName())
+                .description(category.getDescription())
+                .isActive(category.getIsActive())
+                .build();
+    }
+
+    private MaterialResponse mapToMaterialResponse(Material material) {
+        return MaterialResponse.builder()
+                .id(material.getId())
+                .name(material.getName())
+                .description(material.getDescription())
+                .isActive(material.getIsActive())
+                .build();
+    }
+
+    private ColorResponse mapToColorResponse(Color color) {
+        return ColorResponse.builder()
+                .id(color.getId())
+                .name(color.getName())
+                .isActive(color.getIsActive())
+                .build();
+    }
+
+    private ProductImageResponse mapToProductImageResponse(ProductImage image) {
+        return ProductImageResponse.builder()
+                .id(image.getId())
+                .url(image.getUrl())
+                .order(image.getOrder())
+                .isPrimary(image.getIsPrimary())
+                .uploadedAt(image.getUploadedAt())
+                .build();
+    }
+}
