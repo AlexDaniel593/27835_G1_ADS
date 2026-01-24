@@ -24,4 +24,10 @@ export const proformaService = {
     const response = await apiClient.get('/proformas/search', { params: filters });
     return response.data;
   },
+
+  // REQ011-1: Actualizar proforma
+  updateProforma: async (id, proformaData) => {
+    const response = await apiClient.put(`/proformas/${id}`, proformaData);
+    return response.data;
+  },
 };

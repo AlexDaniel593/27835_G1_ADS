@@ -12,6 +12,7 @@ import ManageOffers from './components/app/ManageOffers';
 import PublicCatalog from './components/app/PublicCatalog';
 import GenerateProforma from './components/app/GenerateProforma';
 import ConsultProforma from './components/app/ConsultProforma';
+import EditProforma from './components/app/EditProforma';
 import './App.css';
 
 function App() {
@@ -93,6 +94,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ConsultProforma />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/edit-proforma/:id" 
+            element={
+              <ProtectedRoute>
+                <EditProforma />
               </ProtectedRoute>
             } 
           />

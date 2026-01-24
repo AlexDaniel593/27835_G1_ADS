@@ -1,9 +1,11 @@
 package ec.edu.espe.mueblerix.service.proforma;
 
 import ec.edu.espe.mueblerix.dto.request.CreateProformaRequest;
+import ec.edu.espe.mueblerix.dto.request.UpdateProformaRequest;
 import ec.edu.espe.mueblerix.dto.response.ProformaResponse;
 import ec.edu.espe.mueblerix.exception.ResourceNotFoundException;
 import ec.edu.espe.mueblerix.model.*;
+import ec.edu.espe.mueblerix.model.enums.ModificationType;
 import ec.edu.espe.mueblerix.model.enums.OfferType;
 import ec.edu.espe.mueblerix.repository.*;
 import lombok.RequiredArgsConstructor;
@@ -225,6 +227,118 @@ public class ProformaService {
         return proformas.stream()
                 .map(this::mapToResponse)
                 .collect(Collectors.toList());
+    }
+
+    /**
+     * REQ011: Actualizar proforma
+     */
+    @Transactional
+    public ProformaResponse updateProforma(Long proformaId, UpdateProformaRequest request, Long userId) {
+        log.info("Updating proforma ID: {} by user: {}", proformaId, userId);
+
+        // 1. Obtener proforma existente
+        Proforma proforma = proformaRepository.findById(proformaId)
+                .orElseThrow(() -> new ResourceNotFoundException("Proforma no encontrada"));
+
+        // Verificar que no esté eliminada
+        if (proforma.getIsDeleted()) {
+            throw new IllegalStateException("No se puede actualizar una proforma eliminada");
+        }
+
+        // 2. Obtener usuario que actualiza
+        User updateUser = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+
+        // 3. Actualizar datos del cliente
+        Customer customer = proforma.getCustomer();
+        customer.setName(request.getCustomer().getName());
+        customer.setIdentification(request.getCustomer().getIdentification());
+        customer.setAddress(request.getCustomer().getAddress());
+        customer.setPhone(request.getCustomer().getPhone());
+        customer.setEmail(request.getCustomer().getEmail());
+        customerRepository.save(customer);
+
+        // 4. Limpiar detalles existentes y procesar nuevos
+        proforma.getDetails().clear();
+
+        // 5. Procesar nuevos detalles con ofertas
+        BigDecimal subtotalBeforeDiscount = BigDecimal.ZERO;
+        BigDecimal totalDiscount = BigDecimal.ZERO;
+
+        for (UpdateProformaRequest.ProformaDetailRequest detailRequest : request.getDetails()) {
+            Product product = productRepository.findById(detailRequest.getProductId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Producto no encontrado: " + detailRequest.getProductId()));
+
+            if (!product.getIsActive() || product.getIsDeleted()) {
+                throw new IllegalArgumentException("El producto " + product.getName() + " no está disponible");
+            }
+
+            // Buscar oferta activa
+            Offer activeOffer = findActiveOffer(product);
+
+            // Calcular precios
+            BigDecimal unitPrice = product.getPrice();
+            BigDecimal unitDiscount = BigDecimal.ZERO;
+            BigDecimal finalUnitPrice = unitPrice;
+
+            if (activeOffer != null) {
+                if (activeOffer.getType() == OfferType.PERCENTAGE_DISCOUNT) {
+                    unitDiscount = unitPrice.multiply(activeOffer.getDiscountValue())
+                            .divide(new BigDecimal("100"), 2, RoundingMode.HALF_UP);
+                    finalUnitPrice = unitPrice.subtract(unitDiscount);
+                } else if (activeOffer.getType() == OfferType.PROMOTIONAL_PRICE) {
+                    finalUnitPrice = activeOffer.getPromotionalPrice();
+                    unitDiscount = unitPrice.subtract(finalUnitPrice);
+                }
+            }
+
+            BigDecimal detailSubtotal = finalUnitPrice.multiply(new BigDecimal(detailRequest.getQuantity()));
+            BigDecimal detailDiscount = unitDiscount.multiply(new BigDecimal(detailRequest.getQuantity()));
+
+            // Crear detalle y agregarlo directamente a la colección existente
+            ProformaDetail detail = ProformaDetail.builder()
+                    .proforma(proforma)
+                    .product(product)
+                    .quantity(detailRequest.getQuantity())
+                    .unitPrice(unitPrice)
+                    .unitDiscount(unitDiscount)
+                    .subtotal(detailSubtotal)
+                    .appliedOffer(activeOffer)
+                    .build();
+
+            proforma.getDetails().add(detail);
+            subtotalBeforeDiscount = subtotalBeforeDiscount.add(unitPrice.multiply(new BigDecimal(detailRequest.getQuantity())));
+            totalDiscount = totalDiscount.add(detailDiscount);
+        }
+
+        // 6. Recalcular totales
+        BigDecimal subtotal = subtotalBeforeDiscount.subtract(totalDiscount);
+        BigDecimal tax = subtotal.multiply(IVA_PERCENTAGE).setScale(2, RoundingMode.HALF_UP);
+        BigDecimal total = subtotal.add(tax);
+
+        proforma.setSubtotal(subtotal);
+        proforma.setTotalDiscount(totalDiscount);
+        proforma.setTax(tax);
+        proforma.setTotal(total);
+        proforma.setUpdateUser(updateUser);
+        proforma.setUpdatedAt(LocalDateTime.now());
+
+        // 7. Registrar historial de modificación
+        ProformaModificationHistory history = ProformaModificationHistory.builder()
+                .proforma(proforma)
+                .user(updateUser)
+                .type(ModificationType.UPDATE)
+                .description(request.getModificationReason() != null ? 
+                        request.getModificationReason() : "Actualización de proforma")
+                .build();
+        proforma.getModificationHistory().add(history);
+
+        // 8. Guardar proforma actualizada
+        Proforma updatedProforma = proformaRepository.save(proforma);
+
+        log.info("Proforma {} updated successfully", updatedProforma.getCode());
+
+        return mapToResponse(updatedProforma);
     }
 
     /**

@@ -238,6 +238,13 @@ const ConsultProforma = () => {
                       >
                         <i className="fas fa-eye"></i>
                       </button>
+                      <button
+                        onClick={() => navigate(`/edit-proforma/${proforma.id}`)}
+                        className="btn-edit"
+                        title="Editar proforma"
+                      >
+                        <i className="fas fa-edit"></i>
+                      </button>
                     </td>
                   </tr>
                 ))}

@@ -1,6 +1,7 @@
 package ec.edu.espe.mueblerix.controller;
 
 import ec.edu.espe.mueblerix.dto.request.CreateProformaRequest;
+import ec.edu.espe.mueblerix.dto.request.UpdateProformaRequest;
 import ec.edu.espe.mueblerix.dto.response.ApiResponse;
 import ec.edu.espe.mueblerix.dto.response.ProformaResponse;
 import ec.edu.espe.mueblerix.service.proforma.ProformaService;
@@ -78,5 +79,20 @@ public class ProformaController {
         return ResponseEntity.ok(ApiResponse.success(
                 proformas.isEmpty() ? "No se encontraron proformas con los criterios ingresados" : "Proformas encontradas", 
                 proformas));
+    }
+
+    /**
+     * REQ011-1: Actualizar proforma
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<ProformaResponse>> updateProforma(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateProformaRequest request,
+            @AuthenticationPrincipal ec.edu.espe.mueblerix.security.UserDetailsImpl userDetails) {
+        
+        log.info("Updating proforma ID: {}", id);
+        ProformaResponse proforma = proformaService.updateProforma(id, request, userDetails.getId());
+        
+        return ResponseEntity.ok(ApiResponse.success("Proforma actualizada correctamente", proforma));
     }
 }
