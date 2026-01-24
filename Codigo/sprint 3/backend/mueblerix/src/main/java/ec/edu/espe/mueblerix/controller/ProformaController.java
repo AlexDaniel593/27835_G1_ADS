@@ -7,11 +7,13 @@ import ec.edu.espe.mueblerix.service.proforma.ProformaService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -56,5 +58,25 @@ public class ProformaController {
         log.info("Fetching proforma with ID: {}", id);
         ProformaResponse proforma = proformaService.getProformaById(id);
         return ResponseEntity.ok(ApiResponse.success("Proforma obtenida exitosamente", proforma));
+    }
+
+    /**
+     * REQ012-1: Buscar proformas con filtros
+     */
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<ProformaResponse>>> searchProformas(
+            @RequestParam(required = false) String code,
+            @RequestParam(required = false) String customerName,
+            @RequestParam(required = false) String customerIdentification,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime startDate,
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime endDate) {
+        
+        log.info("Searching proformas with filters");
+        List<ProformaResponse> proformas = proformaService.searchProformas(
+                code, customerName, customerIdentification, startDate, endDate);
+        
+        return ResponseEntity.ok(ApiResponse.success(
+                proformas.isEmpty() ? "No se encontraron proformas con los criterios ingresados" : "Proformas encontradas", 
+                proformas));
     }
 }

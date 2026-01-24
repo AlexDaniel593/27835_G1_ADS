@@ -206,6 +206,28 @@ public class ProformaService {
     }
 
     /**
+     * REQ012-1: Buscar proformas con filtros
+     */
+    @Transactional(readOnly = true)
+    public List<ProformaResponse> searchProformas(
+            String code, 
+            String customerName, 
+            String customerIdentification, 
+            LocalDateTime startDate, 
+            LocalDateTime endDate) {
+        
+        log.info("Searching proformas with filters - code: {}, customerName: {}, identification: {}, startDate: {}, endDate: {}", 
+                code, customerName, customerIdentification, startDate, endDate);
+        
+        List<Proforma> proformas = proformaRepository.findByFilters(
+                code, customerName, customerIdentification, startDate, endDate);
+        
+        return proformas.stream()
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
      * Mapear entidad a DTO
      */
     private ProformaResponse mapToResponse(Proforma proforma) {

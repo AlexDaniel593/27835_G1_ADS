@@ -11,6 +11,7 @@ import DeletedProducts from './components/app/DeletedProducts';
 import ManageOffers from './components/app/ManageOffers';
 import PublicCatalog from './components/app/PublicCatalog';
 import GenerateProforma from './components/app/GenerateProforma';
+import ConsultProforma from './components/app/ConsultProforma';
 import './App.css';
 
 function App() {
@@ -84,6 +85,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <GenerateProforma />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/consult-proforma" 
+            element={
+              <ProtectedRoute>
+                <ConsultProforma />
               </ProtectedRoute>
             } 
           />

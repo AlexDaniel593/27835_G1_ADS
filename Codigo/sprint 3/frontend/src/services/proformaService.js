@@ -18,4 +18,10 @@ export const proformaService = {
     const response = await apiClient.get(`/proformas/${id}`);
     return response.data;
   },
+
+  // REQ012-1: Buscar proformas con filtros
+  searchProformas: async (filters) => {
+    const response = await apiClient.get('/proformas/search', { params: filters });
+    return response.data;
+  },
 };
