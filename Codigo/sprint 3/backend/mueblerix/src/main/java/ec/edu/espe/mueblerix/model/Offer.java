@@ -13,6 +13,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"product", "creationUser"})
+@ToString(exclude = {"product", "creationUser"})
 public class Offer {
 
   @Id

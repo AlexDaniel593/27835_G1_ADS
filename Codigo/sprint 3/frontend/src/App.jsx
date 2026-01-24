@@ -10,6 +10,7 @@ import EditProduct from './components/app/EditProduct';
 import DeletedProducts from './components/app/DeletedProducts';
 import ManageOffers from './components/app/ManageOffers';
 import PublicCatalog from './components/app/PublicCatalog';
+import GenerateProforma from './components/app/GenerateProforma';
 import './App.css';
 
 function App() {
@@ -75,6 +76,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <ManageOffers />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/generate-proforma" 
+            element={
+              <ProtectedRoute>
+                <GenerateProforma />
               </ProtectedRoute>
             } 
           />

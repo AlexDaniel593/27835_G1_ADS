@@ -10,6 +10,8 @@ import java.math.BigDecimal;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"proforma", "product", "appliedOffer"})
+@ToString(exclude = {"proforma", "product", "appliedOffer"})
 public class ProformaDetail {
 
   @Id

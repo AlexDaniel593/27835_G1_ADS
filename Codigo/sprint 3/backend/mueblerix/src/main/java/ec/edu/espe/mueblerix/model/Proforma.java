@@ -14,6 +14,8 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@EqualsAndHashCode(exclude = {"customer", "details", "deletionUser", "creationUser", "updateUser", "modificationHistory"})
+@ToString(exclude = {"customer", "details", "deletionUser", "creationUser", "updateUser", "modificationHistory"})
 public class Proforma {
 
   @Id
