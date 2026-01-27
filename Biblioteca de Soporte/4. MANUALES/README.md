@@ -6,11 +6,11 @@ Este directorio contiene los documentos que forman parte del **Elemento de Confi
 
 ## Información del ECS
 
-- **Código del ECS**: MU - MI 
+- **Código del ECS**: MU - MI   
 - **Nombre del ECS**: Manuales del Sistema  
 - **Autores**: Kevin Amaguaña, Jairo Bonilla, Daniel Guamán, Reishel Tipán  
 - **Proyecto**: Mueblerix - Sistema de Gestión de Proformas y Digitalización de Catálogo  
-- **Localización**: `27835_G1_ADS/Biblioteca de Trabajo/4. MANUALES`  
+- **Localización**: `27835_G1_ADS/Biblioteca de Soporte/4. MANUALES`  
 - **Tipo de ECS**: Documentos (PDF / LaTeX)  
 - **Fecha de creación**: 22/01/2025  
 - **Fecha de carga al repositorio**: 27/01/2025  
