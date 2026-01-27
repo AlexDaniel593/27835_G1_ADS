@@ -1,0 +1,45 @@
+// Configuración de constantes de la aplicación
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8080/api/v1';
+
+export const CLOUDINARY_CONFIG = {
+  CLOUD_NAME: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+  UPLOAD_PRESET: import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET,
+};
+
+export const API_ENDPOINTS = {
+  AUTH: {
+    LOGIN: '/auth/login',
+  },
+  USERS: {
+    CHANGE_PASSWORD: '/users/change-password',
+  },
+  PRODUCTS: {
+    BASE: '/products',
+    BY_ID: (id) => `/products/${id}`,
+    BY_CATEGORY: (categoryId) => `/products/category/${categoryId}`,
+    SEARCH: '/products/search',
+    SEARCH_ADVANCED: '/products/search/advanced',
+  },
+  CATEGORIES: {
+    BASE: '/categories',
+    BY_ID: (id) => `/categories/${id}`,
+  },
+  MATERIALS: {
+    BASE: '/materials',
+    BY_ID: (id) => `/materials/${id}`,
+  },
+  COLORS: {
+    BASE: '/colors',
+    BY_ID: (id) => `/colors/${id}`,
+  },
+  OFFERS: {
+    BASE: '/offers',
+    BY_ID: (id) => `/offers/${id}`,
+    BY_PRODUCT: (productId) => `/offers/product/${productId}`,
+  },
+};
+
+export const STORAGE_KEYS = {
+  TOKEN: 'access_token',
+  USER: 'user_info',
+};
