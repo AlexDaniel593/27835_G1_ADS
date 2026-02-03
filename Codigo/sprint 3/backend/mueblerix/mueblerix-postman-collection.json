@@ -1,0 +1,855 @@
+{
+  "info": {
+    "name": "Mueblerix API",
+    "description": "Colección de endpoints para el Sistema de Gestión Mueblerix",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "27835"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{jwt_token}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8080",
+      "type": "string"
+    },
+    {
+      "key": "jwt_token",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "Autenticación",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    var jsonData = pm.response.json();",
+                  "    if (jsonData.data && jsonData.data.accessToken) {",
+                  "        pm.collectionVariables.set(\"jwt_token\", jsonData.data.accessToken);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"username\": \"admin\",\n  \"password\": \"admin123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            },
+            "description": "Autenticación de usuario. Retorna un token JWT."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Usuarios",
+      "item": [
+        {
+          "name": "Cambiar Contraseña",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"oldPassword\": \"oldPassword123\",\n  \"newPassword\": \"newPassword123\",\n  \"confirmPassword\": \"newPassword123\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users/change-password",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users", "change-password"]
+            },
+            "description": "Permite al usuario cambiar su contraseña"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Categorías",
+      "item": [
+        {
+          "name": "Listar Categorías",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories"]
+            },
+            "description": "Obtiene todas las categorías"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Categoría por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories", "1"]
+            },
+            "description": "Obtiene una categoría específica por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Categoría",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Muebles de Oficina\",\n  \"description\": \"Mobiliario para espacios de trabajo\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "categories"]
+            },
+            "description": "Crea una nueva categoría"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Colores",
+      "item": [
+        {
+          "name": "Listar Colores",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/colors",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "colors"]
+            },
+            "description": "Obtiene todos los colores"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Color por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/colors/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "colors", "1"]
+            },
+            "description": "Obtiene un color específico por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Color",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Azul Marino\",\n  \"hexCode\": \"#001F3F\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/colors",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "colors"]
+            },
+            "description": "Crea un nuevo color"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Materiales",
+      "item": [
+        {
+          "name": "Listar Materiales",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/materials",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "materials"]
+            },
+            "description": "Obtiene todos los materiales"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Material por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/materials/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "materials", "1"]
+            },
+            "description": "Obtiene un material específico por ID"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Material",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Roble\",\n  \"description\": \"Madera de roble natural\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/materials",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "materials"]
+            },
+            "description": "Crea un nuevo material"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Productos",
+      "item": [
+        {
+          "name": "Listar Productos",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Obtiene todos los productos activos"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Producto por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "1"]
+            },
+            "description": "Obtiene un producto específico"
+          },
+          "response": []
+        },
+        {
+          "name": "Productos por Categoría",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/category/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "category", "1"]
+            },
+            "description": "Lista productos de una categoría"
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Productos por Nombre",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/search?name=mesa",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "search"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "mesa"
+                }
+              ]
+            },
+            "description": "Busca productos por nombre"
+          },
+          "response": []
+        },
+        {
+          "name": "Búsqueda Avanzada",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/search/advanced?categoryId=1&minPrice=100&maxPrice=500",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "search", "advanced"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "mesa",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                },
+                {
+                  "key": "materialId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "colorId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "100"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "500"
+                }
+              ]
+            },
+            "description": "Búsqueda avanzada con múltiples filtros"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Producto",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Escritorio Ejecutivo\",\n  \"description\": \"Escritorio de madera de roble con cajones\",\n  \"price\": 450.00,\n  \"stock\": 10,\n  \"categoryId\": 1,\n  \"images\": [\n    {\"url\": \"https://example.com/image1.jpg\", \"isPrimary\": true},\n    {\"url\": \"https://example.com/image2.jpg\", \"isPrimary\": false}\n  ],\n  \"colorIds\": [1, 2],\n  \"materialIds\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products"]
+            },
+            "description": "Crea un nuevo producto"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Producto",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Escritorio Ejecutivo Premium\",\n  \"description\": \"Escritorio de madera de roble con cajones y acabado premium\",\n  \"price\": 550.00,\n  \"stock\": 8,\n  \"categoryId\": 1,\n  \"images\": [\n    {\"url\": \"https://example.com/image1.jpg\", \"isPrimary\": true}\n  ],\n  \"colorIds\": [1],\n  \"materialIds\": [1]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "1"]
+            },
+            "description": "Actualiza un producto existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Producto",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "1"]
+            },
+            "description": "Elimina (lógicamente) un producto"
+          },
+          "response": []
+        },
+        {
+          "name": "Listar Productos Eliminados",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/deleted",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "deleted"]
+            },
+            "description": "Lista productos eliminados"
+          },
+          "response": []
+        },
+        {
+          "name": "Restaurar Producto",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/products/1/restore",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "products", "1", "restore"]
+            },
+            "description": "Restaura un producto eliminado"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Ofertas",
+      "item": [
+        {
+          "name": "Listar Ofertas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/offers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "offers"]
+            },
+            "description": "Obtiene todas las ofertas"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Oferta por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/offers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "offers", "1"]
+            },
+            "description": "Obtiene una oferta específica"
+          },
+          "response": []
+        },
+        {
+          "name": "Ofertas por Producto",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/offers/product/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "offers", "product", "1"]
+            },
+            "description": "Lista ofertas de un producto"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Oferta",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": 1,\n  \"discountPercentage\": 15.0,\n  \"startDate\": \"2026-02-05T00:00:00\",\n  \"endDate\": \"2026-02-20T23:59:59\",\n  \"description\": \"Descuento de San Valentín\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/offers",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "offers"]
+            },
+            "description": "Crea una nueva oferta"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Oferta",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"discountPercentage\": 20.0,\n  \"startDate\": \"2026-02-05T00:00:00\",\n  \"endDate\": \"2026-02-25T23:59:59\",\n  \"description\": \"Descuento extendido de San Valentín\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/offers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "offers", "1"]
+            },
+            "description": "Actualiza una oferta existente"
+          },
+          "response": []
+        },
+        {
+          "name": "Eliminar Oferta",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/offers/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "offers", "1"]
+            },
+            "description": "Elimina una oferta"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Proformas",
+      "item": [
+        {
+          "name": "Listar Proformas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/proformas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "proformas"]
+            },
+            "description": "Obtiene todas las proformas"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Proforma por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/proformas/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "proformas", "1"]
+            },
+            "description": "Obtiene una proforma específica"
+          },
+          "response": []
+        },
+        {
+          "name": "Buscar Proformas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/proformas/search?customerName=Juan&startDate=2026-01-01T00:00:00&endDate=2026-12-31T23:59:59",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "proformas", "search"],
+              "query": [
+                {
+                  "key": "code",
+                  "value": "PRF-001",
+                  "disabled": true
+                },
+                {
+                  "key": "customerName",
+                  "value": "Juan"
+                },
+                {
+                  "key": "customerIdentification",
+                  "value": "1234567890",
+                  "disabled": true
+                },
+                {
+                  "key": "startDate",
+                  "value": "2026-01-01T00:00:00"
+                },
+                {
+                  "key": "endDate",
+                  "value": "2026-12-31T23:59:59"
+                }
+              ]
+            },
+            "description": "Busca proformas con filtros"
+          },
+          "response": []
+        },
+        {
+          "name": "Crear Proforma",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": {\n    \"name\": \"Juan Pérez\",\n    \"identification\": \"1234567890\",\n    \"email\": \"juan.perez@email.com\",\n    \"phone\": \"0987654321\",\n    \"address\": \"Av. Principal 123\"\n  },\n  \"details\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 2,\n      \"unitPrice\": 450.00,\n      \"discount\": 0.0\n    },\n    {\n      \"productId\": 2,\n      \"quantity\": 1,\n      \"unitPrice\": 250.00,\n      \"discount\": 10.0\n    }\n  ],\n  \"observations\": \"Entrega urgente\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/proformas",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "proformas"]
+            },
+            "description": "Crea una nueva proforma"
+          },
+          "response": []
+        },
+        {
+          "name": "Actualizar Proforma",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"customer\": {\n    \"name\": \"Juan Pérez García\",\n    \"identification\": \"1234567890\",\n    \"email\": \"juan.perez@email.com\",\n    \"phone\": \"0987654321\",\n    \"address\": \"Av. Principal 123\"\n  },\n  \"details\": [\n    {\n      \"productId\": 1,\n      \"quantity\": 3,\n      \"unitPrice\": 450.00,\n      \"discount\": 5.0\n    }\n  ],\n  \"observations\": \"Entrega urgente - actualizado\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/proformas/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "proformas", "1"]
+            },
+            "description": "Actualiza una proforma existente"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Catálogo Público",
+      "item": [
+        {
+          "name": "Categorías (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/catalog/categories",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "catalog", "categories"]
+            },
+            "description": "Obtiene todas las categorías (sin autenticación)"
+          },
+          "response": []
+        },
+        {
+          "name": "Materiales (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/catalog/materials",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "catalog", "materials"]
+            },
+            "description": "Obtiene todos los materiales (sin autenticación)"
+          },
+          "response": []
+        },
+        {
+          "name": "Colores (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/catalog/colors",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "catalog", "colors"]
+            },
+            "description": "Obtiene todos los colores (sin autenticación)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Productos Públicos",
+      "item": [
+        {
+          "name": "Listar Productos (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/products",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "products"]
+            },
+            "description": "Obtiene todos los productos (sin autenticación)"
+          },
+          "response": []
+        },
+        {
+          "name": "Obtener Producto por ID (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/products/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "products", "1"]
+            },
+            "description": "Obtiene un producto por ID (sin autenticación)"
+          },
+          "response": []
+        },
+        {
+          "name": "Productos por Categoría (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/products/category/1",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "products", "category", "1"]
+            },
+            "description": "Lista productos de una categoría (sin autenticación)"
+          },
+          "response": []
+        },
+        {
+          "name": "Filtrar Productos (Público)",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/public/products/filter?categoryId=1&minPrice=100&maxPrice=1000",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "public", "products", "filter"],
+              "query": [
+                {
+                  "key": "name",
+                  "value": "mesa",
+                  "disabled": true
+                },
+                {
+                  "key": "categoryId",
+                  "value": "1"
+                },
+                {
+                  "key": "materialId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "colorId",
+                  "value": "1",
+                  "disabled": true
+                },
+                {
+                  "key": "minPrice",
+                  "value": "100"
+                },
+                {
+                  "key": "maxPrice",
+                  "value": "1000"
+                }
+              ]
+            },
+            "description": "Filtra productos con múltiples criterios (sin autenticación)"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

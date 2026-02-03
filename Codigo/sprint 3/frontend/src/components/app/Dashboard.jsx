@@ -17,7 +17,6 @@ const Dashboard = () => {
       sessionStorage.setItem('welcomeShown', 'true');
     }
   }, []);
-
   const handleChangePasswordClick = () => {
     setShowWelcomeModal(false);
     setShowChangePassword(true);
