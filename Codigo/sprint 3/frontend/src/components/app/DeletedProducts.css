@@ -3,30 +3,31 @@
   padding: 30px;
   max-width: 1400px;
   margin: 0 auto;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: #EFE9D5;
   min-height: 100vh;
 }
 
 .deleted-products-header {
   text-align: center;
   margin-bottom: 40px;
-  color: white;
+  color: #27445D;
 }
 
 .deleted-products-header h1 {
   font-size: 2.5rem;
   margin-bottom: 10px;
-  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  color: #27445D;
 }
 
 .deleted-products-header p {
   font-size: 1.1rem;
-  opacity: 0.95;
+  color: #27445D;
+  opacity: 0.8;
 }
 
 .back-button {
-  background: white;
-  color: #667eea;
+  background: #497D74;
+  color: white;
   border: none;
   padding: 12px 24px;
   border-radius: 8px;
@@ -35,12 +36,13 @@
   font-weight: 600;
   transition: all 0.3s ease;
   margin-bottom: 20px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 6px rgba(73, 125, 116, 0.3);
 }
 
 .back-button:hover {
+  background: #71BBB2;
   transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 6px 12px rgba(73, 125, 116, 0.4);
 }
 
 .empty-message {
@@ -48,17 +50,17 @@
   background: white;
   padding: 60px 40px;
   border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 .empty-message h2 {
-  color: #667eea;
+  color: #497D74;
   font-size: 1.8rem;
   margin-bottom: 10px;
 }
 
 .empty-message p {
-  color: #666;
+  color: #27445D;
   font-size: 1.1rem;
 }
 
@@ -73,14 +75,14 @@
   background: white;
   border-radius: 16px;
   overflow: hidden;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 15px rgba(39, 68, 93, 0.15);
   transition: all 0.3s ease;
   position: relative;
 }
 
 .deleted-product-card:hover {
   transform: translateY(-8px);
-  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 8px 25px rgba(39, 68, 93, 0.25);
 }
 
 .deleted-badge {
@@ -101,7 +103,7 @@
   width: 100%;
   height: 240px;
   overflow: hidden;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  background: #f5f5f5;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -130,7 +132,7 @@
 .product-name {
   font-size: 1.4rem;
   font-weight: 700;
-  color: #2c3e50;
+  color: #27445D;
   margin-bottom: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -140,7 +142,7 @@
 .product-price {
   font-size: 1.6rem;
   font-weight: 700;
-  color: #667eea;
+  color: #497D74;
   margin-bottom: 15px;
 }
 
@@ -158,12 +160,13 @@
 
 .detail-label {
   font-weight: 600;
-  color: #7f8c8d;
+  color: #27445D;
   font-size: 0.9rem;
+  opacity: 0.7;
 }
 
 .detail-value {
-  color: #2c3e50;
+  color: #27445D;
   font-weight: 500;
   font-size: 0.9rem;
 }
@@ -176,8 +179,8 @@
 }
 
 .tag {
-  background: #ecf0f1;
-  color: #34495e;
+  background: #EFE9D5;
+  color: #27445D;
   padding: 5px 12px;
   border-radius: 12px;
   font-size: 0.8rem;
@@ -185,26 +188,26 @@
 }
 
 .deletion-info {
-  background: #fef5e7;
+  background: #fff3cd;
   padding: 12px;
   border-radius: 8px;
   margin-bottom: 15px;
-  border-left: 4px solid #f39c12;
+  border-left: 4px solid #ffc107;
 }
 
 .deletion-info p {
   margin: 5px 0;
   font-size: 0.85rem;
-  color: #7d6608;
+  color: #856404;
 }
 
 .deletion-info strong {
-  color: #5d4d08;
+  color: #856404;
 }
 
 .restore-button {
   width: 100%;
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: #497D74;
   color: white;
   border: none;
   padding: 14px;
@@ -213,12 +216,13 @@
   font-size: 1.05rem;
   font-weight: 700;
   transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  box-shadow: 0 4px 12px rgba(73, 125, 116, 0.3);
 }
 
 .restore-button:hover {
+  background: #71BBB2;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+  box-shadow: 0 6px 16px rgba(73, 125, 116, 0.4);
 }
 
 .restore-button:active {
@@ -277,13 +281,13 @@
 }
 
 .modal-content h2 {
-  color: #2c3e50;
+  color: #27445D;
   margin-bottom: 20px;
   font-size: 1.8rem;
 }
 
 .modal-content p {
-  color: #555;
+  color: #27445D;
   margin-bottom: 30px;
   font-size: 1.1rem;
   line-height: 1.6;
@@ -319,7 +323,7 @@
 
 .cancel-button {
   background: #ecf0f1;
-  color: #2c3e50;
+  color: #27445D;
 }
 
 .cancel-button:hover {
@@ -327,14 +331,15 @@
 }
 
 .confirm-button {
-  background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+  background: #497D74;
   color: white;
-  box-shadow: 0 4px 12px rgba(39, 174, 96, 0.3);
+  box-shadow: 0 4px 12px rgba(73, 125, 116, 0.3);
 }
 
 .confirm-button:hover {
+  background: #71BBB2;
   transform: translateY(-2px);
-  box-shadow: 0 6px 16px rgba(39, 174, 96, 0.4);
+  box-shadow: 0 6px 16px rgba(73, 125, 116, 0.4);
 }
 
 .error-message {
@@ -350,18 +355,22 @@
 .loading-spinner {
   text-align: center;
   padding: 60px;
-  color: white;
+  color: #27445D;
   font-size: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .spinner {
-  border: 4px solid rgba(255, 255, 255, 0.3);
-  border-top: 4px solid white;
+  border: 4px solid #EFE9D5;
+  border-top: 4px solid #497D74;
   border-radius: 50%;
   width: 50px;
   height: 50px;
   animation: spin 1s linear infinite;
-  margin: 0 auto 20px;
+  margin-bottom: 20px;
 }
 
 @keyframes spin {

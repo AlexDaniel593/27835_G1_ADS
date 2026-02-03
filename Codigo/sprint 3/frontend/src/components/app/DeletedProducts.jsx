@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'sonner';
 import { productService } from '../../services/productService';
 import './DeletedProducts.css';
 
@@ -24,7 +25,9 @@ const DeletedProducts = () => {
       setDeletedProducts(response.data || []);
     } catch (err) {
       console.error('Error loading deleted products:', err);
-      setError(err.response?.data?.message || 'Error al cargar los productos eliminados');
+      const errorMsg = err.response?.data?.message || 'Error al cargar los productos eliminados';
+      setError(errorMsg);
+      toast.error(errorMsg);
     } finally {
       setLoading(false);
     }
@@ -54,7 +57,7 @@ const DeletedProducts = () => {
       const response = await productService.restoreProduct(selectedProduct.id);
 
       // Paso 11: Mostrar mensaje de éxito
-      alert(response.message || 'Producto restaurado correctamente.');
+      toast.success(response.message || 'Producto restaurado correctamente.');
 
       // Cerrar modal
       setShowModal(false);
@@ -66,7 +69,9 @@ const DeletedProducts = () => {
     } catch (err) {
       console.error('Error restoring product:', err);
       // Mostrar mensaje de error (validación de duplicados, etc.)
-      setError(err.response?.data?.message || 'Error al restaurar el producto');
+      const errorMsg = err.response?.data?.message || 'Error al restaurar el producto';
+      setError(errorMsg);
+      toast.error(errorMsg);
       setShowModal(false);
     } finally {
       setRestoring(false);
@@ -91,7 +96,6 @@ const DeletedProducts = () => {
       <div className="deleted-products-container">
         <div className="loading-spinner">
           <div className="spinner"></div>
-          <p>Cargando productos eliminados...</p>
         </div>
       </div>
     );
